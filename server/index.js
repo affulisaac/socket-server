@@ -1,9 +1,6 @@
 const express = require("express");
 const { Server } = require("socket.io");
 const { createServer } = require("http");
-const { availableParallelism } = require("os");
-const cluster = require("cluster");
-const { createAdapter, setupPrimary } = require("@socket.io/cluster-adapter");
 const winston = require("winston");
 const cors = require("cors");
 
@@ -17,24 +14,8 @@ const logger = winston.createLogger({
   ],
 });
 
-if (cluster.isPrimary) {
-  const numCPUs = availableParallelism();
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork({ PORT: 3000 + i });
-  }
-  setupPrimary();
-} else {
-  main().catch(err => {
-    logger.error("Error in main function:", err);
-  });
-}
-
 async function main() {
-  const port = process.env.PORT;
-  if (!port) {
-    throw new Error("PORT environment variable not set");
-  }
-
+  const port = process.env.PORT || 3000;
   const app = express();
   const server = createServer(app);
   const io = new Server(server, {
@@ -45,7 +26,6 @@ async function main() {
       allowedHeaders: ["my-custom-header"],
       methods: ["GET", "POST"],
     },
-    adapter: createAdapter(),
   });
 
   // Middleware
@@ -101,3 +81,7 @@ async function main() {
     logger.error("Uncaught Exception:", err);
   });
 }
+
+main().catch((err) => {
+  logger.error("Error in main function:", err);
+});
