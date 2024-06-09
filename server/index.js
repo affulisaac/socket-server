@@ -19,7 +19,7 @@ async function main() {
   const app = express();
   const server = createServer(app);
   const io = new Server(server, {
-    // transports: ["websocket", "polling"],
+    transports: ["websocket", "polling"],
     cors: {
       origin:  "*"
       // allowedHeaders: ["my-custom-header"],
