@@ -3,7 +3,7 @@ const { Server } = require("socket.io");
 const { createServer } = require("http");
 const winston = require("winston");
 const cors = require("cors");
-
+app.use(cors());
 // Initialize logger
 const logger = winston.createLogger({
   level: "info",
@@ -18,10 +18,15 @@ async function main() {
   const port = process.env.PORT || 3000;
   const app = express();
   const server = createServer(app);
-  const io = new Server(server);
+  const io = new Server(server, {
+    cors: {
+      origin: "*",
+    },
+  
+  });
 
   // Middleware
-  app.use(cors());
+
   app.use(express.json());
 
   app.get("/", (req, res) => {
