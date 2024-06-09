@@ -21,7 +21,7 @@ async function main() {
   const io = new Server(server, {
     transports: ["websocket", "polling"],
     cors: {
-      origin: "*",
+      origin: "http://localhost",
       methods: ["GET", "POST"],
     },
     allowEIO3: true,
