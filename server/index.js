@@ -19,10 +19,9 @@ async function main() {
   const app = express();
   const server = createServer(app);
   const io = new Server(server, {
-    connectionStateRecovery: {},
     transports: ["websocket", "polling"],
     cors: {
-      origin: process.env.CORS_ORIGIN || "http://localhost", // Adjust this for production
+      origin: process.env.CORS_ORIGIN || "*", // Adjust this for production
       allowedHeaders: ["my-custom-header"],
       methods: ["GET", "POST"],
     },
@@ -39,23 +38,28 @@ async function main() {
   let users = new Set();
 
   io.on("connection", (socket) => {
+    logger.info(`New connection: ${socket.id}`);
     users.add(socket.id);
     io.emit("clients-total", users.size);
 
     socket.on("disconnect", () => {
+      logger.info(`Disconnected: ${socket.id}`);
       users.delete(socket.id);
       io.emit("clients-total", users.size);
     });
 
     socket.on("chat", (msg, chatId) => {
+      logger.info(`Chat message received: ${msg}, chatId: ${chatId}`);
       io.emit(chatId, msg);
     });
 
     socket.on("typing", (clientId) => {
+      logger.info(`Client typing: ${clientId}`);
       io.emit("typing", clientId);
     });
 
     socket.on("stop typing", (clientId) => {
+      logger.info(`Client stopped typing: ${clientId}`);
       io.emit("stop typing", clientId);
     });
   });
