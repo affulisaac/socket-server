@@ -19,11 +19,11 @@ async function main() {
   const app = express();
   const server = createServer(app);
   const io = new Server(server, {
-    transports: ["websocket", "polling"],
+    // transports: ["websocket", "polling"],
     cors: {
-      origin: process.env.CORS_ORIGIN || "*", // Adjust this for production
-      allowedHeaders: ["my-custom-header"],
-      methods: ["GET", "POST"],
+      origin:  "*"
+      // allowedHeaders: ["my-custom-header"],
+      // methods: ["GET", "POST"],
     },
   });
 
